@@ -14,7 +14,7 @@ selected_season = st.sidebar.selectbox('Season', ['2022/2023','2021/2022','2020/
 def load_data(league, season):
 
 if selected_league == 'England':
-        league = 'E0'
+league = 'E0'
       if selected_league == 'Germany':
         league = 'D1'
       if selected_league == 'Italy':
