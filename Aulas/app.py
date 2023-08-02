@@ -1,82 +1,17 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import base64
-import warnings
-warnings.filterwarnings('ignore')
-from datetime import datetime, date
-from io import BytesIO
-import matplotlib.pyplot as plt
-import plotly.graph_objects as go
 
-st.title("Web App - FutPythonTrader")
+st.title("Web App Football Data")
 
-def jogos_do_dia():
-    
-    # st.image('logo.jpg', width=250)
-    st.header("Jogos do Dia")
+st.sidebar.header("Leagues")
+selected_league = st.sidebar.selectbox('League',['England','Germany','Italy','Spain','France'])
 
-    dia = st.date_input(
-        "Data",
-        date.today())
+st.sidebar.header("Season")
+selected_season = st.sidebar.selectbox('Season', ['2022/2023','2021/2022','2020/2021'])
 
-    ########## Importando os Jogos do Dia ##########
-
-    @st.cache
-    def load_data_jogos():
-
-        # data_jogos = pd.read_csv(f'./Jogos_do_Dia/{dia}_Jogos_do_Dia.csv')
-        data_jogos = pd.read_csv(f'https://github.com/futpythontrader/YouTube/blob/main/Jogos_do_Dia_Betfair/{dia}_Jogos_do_Dia.csv?raw=true')
-
-        return data_jogos
-
-    try:
-        df_jogos = load_data_jogos()
-        
-        df_jogos = df_jogos[['League','Date','Time','Home','Away',
-                        'Odd_H','Odd_D','Odd_A','Odd_Over25','Odd_Under25','Odd_BTTS_Yes','Odd_BTTS_No']]
-
-        df = df_jogos[['League','Time','Home','Away','Odd_H','Odd_D','Odd_A','Odd_Over25','Odd_BTTS_Yes']]
-        # Ajustando o Índice
-        df.reset_index(inplace=True, drop=True)
-        df.index = df.index.set_names(['Nº'])
-        df = df.rename(index=lambda x: x + 1)
-    
-    
-    
-        st.dataframe(df)
-
-        # Define a função que retorna a planilha em formato XLSX
-        def download_excel():
-            output = BytesIO()
-            writer = pd.ExcelWriter(output, engine='xlsxwriter')
-            df_jogos.to_excel(writer, index=False, sheet_name='Sheet1')
-            writer.close()
-            processed_data = output.getvalue()
-            return processed_data
-
-        # Cria o botão de download
-        button = st.download_button(
-            label='Download',
-            data=download_excel(),
-            file_name=f'FutPythonTrader_Jogos_do_Dia_{dia}.xlsx',
-            mime='application/vnd.ms-excel'
-        )
-    except:
-        st.write("Jogos desse dia ainda não disponíveis.")
-        st.write("Por Favor. Aguarde!")
-
-
-def football_data():
-
-    st.sidebar.header("Leagues")
-    selected_league = st.sidebar.selectbox('League',['England','Germany','Italy','Spain','France'])
-
-    st.sidebar.header("Season")
-    selected_season = st.sidebar.selectbox('Season', ['2021/2022','2020/2021','2019/2020'])
-
-    # WebScraping Football Data
-    def load_data(league, season):
+# WebScraping Football Data
+def load_data(league, season):
       
       if selected_league == 'England':
         league = 'E0'
